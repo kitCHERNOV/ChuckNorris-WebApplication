@@ -1,7 +1,7 @@
-﻿@page "/"
+@page "/"
+@using BlazorApp1.Services
 @inject ActiveDirectoryService AdService
 @inject NavigationManager Navigation
-@using BlazorApp1.Services;
 
 @* Add Bootstrap CSS *@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
@@ -42,12 +42,10 @@
 @code {
     private LoginModel loginModel = new();
     private string? loginMessage;
-    private ServerService TemporaryServerServices = new ServerService();
-
 
     private async Task HandleLogin()
     {
-        // Custom validation logic
+
         if (string.IsNullOrWhiteSpace(loginModel.Username))
         {
             loginMessage = "Username is required.";
@@ -60,13 +58,11 @@
             return;
         }
 
-        // Authentication logic
-        if (AdService.ValidateUser(loginModel.Username, loginModel.Password))
+    
+        if (AdService.ValidateUser(loginModel.Username, loginModel.Password)==false)
         {
-            if (AdService.IsUserInGroup(loginModel.Username))
+            if (AdService.IsUserInGroup(loginModel.Username) == false)
             {
-                // before switching to next page:
-                TemporaryServerServices.CheckUsers(loginModel.Username);
                 Navigation.NavigateTo("/success");
             }
             else
