@@ -1,0 +1,142 @@
+﻿@page "/success"
+
+@using System.Collections.Generic
+@using System.Text.Json
+
+@using BlazorApp1.Components
+@using BlazorApp1.Services
+@using BlazorApp1.Models
+@inject ServerService serverService
+
+
+<h2>Список серверов</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>База данных</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var server in serverService.GetServers())
+        {
+            <tr>
+                <td>@server.UserName</td>
+                <td>@server.Database</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => ShowServerDetails(server)">Подробнее</button>
+                    <button class="btn btn-warning" @onclick="() => ShowServerEdit(server)">Редактировать</button>
+                    <button class="btn btn-danger" @onclick="() => ShowDeleteServerModal(server)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button class="btn btn-success" @onclick="() => ShowAddServerModal()">Добавить</button>
+
+@if (showAddServerModal)
+{
+    <AddServerModal Server="serverService.GetNewServer()" OnServerSaved="AddServer" OnModalClosed="CloseAddServerModal" />
+}
+
+@if (showServerDetails)
+{
+    <ServerDetailsModal Server="serverService.GetSelectedServer()" OnModalClosed="CloseServerDetails" />
+}
+
+@if (showServerEdit)
+{
+    <ServerEditModal ServerSelected="serverService.GetSelectedServer()" OnServerSaved="UpdateServer" OnModalClosed="CloseServerEdit" />
+}
+
+@if (showDeleteServerModal)
+{
+    <DeleteServerModal Server="serverService.GetSelectedServer()" OnServerDeleted="DeleteServer" OnModalClosed="CloseDeleteServerModal" />
+}
+
+@code {
+    private bool showAddServerModal = false;
+    private bool showServerDetails = false;
+    private bool showServerEdit = false;
+    private bool showDeleteServerModal = false;
+
+    protected override void OnInitialized()
+    {
+        // Загрузка списка серверов из файла или другого источника
+        serverService.GetServers();
+    }
+
+    private void AddServer(Server server)
+    {
+        // Добавление сервера через ServerService
+        // serverService.SaveServer(server);
+        serverService.AddServer(server);
+        CloseAddServerModal();
+        // serverService.SaveServers(serverService.GetServers());
+    }
+
+    private void ShowAddServerModal()
+    {
+        showAddServerModal = true;
+    }
+
+    private void CloseAddServerModal()
+    {
+        showAddServerModal = false;
+    }
+
+    private void ShowServerDetails(Server server)
+    {
+        serverService.SetSelectedServer(server);
+        showServerDetails = true;
+    }
+
+    private void CloseServerDetails()
+    {
+        showServerDetails = false;
+    }
+
+    private void ShowServerEdit(Server server)
+    {
+        serverService.SetSelectedServer(server);
+        showServerEdit = true;
+    }
+
+    private void CloseServerEdit()
+    {
+        showServerEdit = false;
+    }
+
+    private void UpdateServer(Server server)
+    {
+        // Обновление сервера через ServerService
+        serverService.UpdateServer(server);
+        showServerEdit = false;
+        serverService.SaveServers(serverService.GetServers());
+    }
+
+    
+
+    private void ShowDeleteServerModal(Server server)
+    {
+        serverService.SetSelectedServer(server);
+        showDeleteServerModal = true;
+    }
+
+    private void CloseDeleteServerModal()
+    {
+        showDeleteServerModal = false;
+    }
+
+    private void DeleteServer(Server server)
+    {
+        // Удаление сервера через ServerService
+        serverService.DeleteServer(server);
+        showDeleteServerModal = false;
+    }
+
+}
+

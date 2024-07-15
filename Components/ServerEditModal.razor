@@ -1,0 +1,92 @@
+﻿@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject ServerService serverService
+@inject NavigationManager navigationManager
+
+<div class="modal" tabindex="-1" role="dialog" style="display:block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование сервера</h5>
+                <button type="button" class="close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@ServerSelected" OnValidSubmit="@SubmitForm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    @* <div class="form-group">
+                        <label for="id">keyId</label>
+                        <InputText id="id" @bind-Value="@ServerSelected.KeyID" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.KeyID)" />
+                    </div> *@
+
+                    <div class="form-group">
+                        <label for="host">Хост</label>
+                        <InputText id="host" @bind-Value="@ServerSelected.Host" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.Host)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Имя сервера</label>
+                        <InputText id="name" @bind-Value="@ServerSelected.UserName" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.UserName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="port">Порт</label>
+                        <InputText id="port" @bind-Value="@ServerSelected.Port" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.Port)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login">Логин</label>
+                        <InputText id="login" @bind-Value="@ServerSelected.Login" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.Login)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <InputText type="password" id="password" @bind-Value="@ServerSelected.Password" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.Password)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="database">База данных</label>
+                        <InputText id="database" @bind-Value="@ServerSelected.Database" class="form-control" />
+                        <ValidationMessage For="@(() => ServerSelected.Database)" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Server ServerSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<Server> OnServerSaved { get; set; }
+
+    [Parameter]
+    public EventCallback OnModalClosed { get; set; }
+
+    private void SubmitForm()
+    {
+        // Обновление сервера
+        // Console.WriteLine($"{ServerSelected.Host}, {ServerSelected.KeyID}, {ServerSelected.UserName}");
+        // OnServerSaved.InvokeAsync(ServerSelected);
+        serverService.UpdateServer(ServerSelected);
+        CloseModal();
+    }
+
+    private void CloseModal()
+    {
+        // Закрытие модального окна
+        OnModalClosed.InvokeAsync();
+        navigationManager.NavigateTo("/success");
+    }
+}

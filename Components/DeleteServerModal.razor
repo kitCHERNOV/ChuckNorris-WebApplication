@@ -1,0 +1,56 @@
+﻿@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject ServerService serverService
+@inject NavigationManager navigationManager
+
+<div class="modal" tabindex="-1" role="dialog" style="display:block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удаление сервера</h5>
+                <button type="button" class="close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Вы действительно хотите удалить сервер "@Server.UserName"?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" @onclick="DeleteServer">Да, удалить</button>
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Server Server { get; set; }
+
+    [Parameter]
+    public EventCallback<Server> OnServerDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback OnModalClosed { get; set; }
+
+    private void DeleteServer()
+    {
+        // Удаление сервера
+        
+        // LogAction($"Сервер '{Server.UserName}' удален");
+        serverService.DeleteServer(Server);
+        CloseModal();
+       
+    }
+
+    private void CloseModal()
+    {
+        // Закрытие модального окна
+        OnModalClosed.InvokeAsync();
+        navigationManager.NavigateTo("/success");
+    }
+
+    // private void LogAction(string action)
+    // {
+    //     // Запись действия в историю
+    //     serverService.LogAction(action);
+    // }
+}
