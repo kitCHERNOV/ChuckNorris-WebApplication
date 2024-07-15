@@ -6,22 +6,34 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Configure services
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// Configure server service with dependency injection
 builder.Services.AddScoped<ServerService>(sp =>
 {
     var servers = new List<Server>();
     var newServer = new Server();
     return new ServerService(servers, newServer);
 });
-builder.Services.AddScoped<ActiveDirectoryService>();
+
+// Configure Active Directory Service
+builder.Services.AddScoped<ActiveDirectoryService>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var domainName = configuration["ActiveDirectory:DomainName"];
+    var container = configuration["ActiveDirectory:Container"];
+    return new ActiveDirectoryService(domainName, container);
+});
 
 var app = builder.Build();
 
+// Configure middleware and request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -29,7 +41,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
