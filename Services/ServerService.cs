@@ -18,7 +18,7 @@ namespace BlazorApp1.Services
         private Server _selectedServer;
         private Server _newServer;
         private static int uID; // id пользователя
-        private int sID; // id сервера; 0 - по умолчанию
+        private int sID = 0; // id сервера; 0 - по умолчанию
         private int aID;
         
         // Список действий
@@ -43,6 +43,9 @@ namespace BlazorApp1.Services
         {
             // returning func is located here
             uID = sqlFunc.AddNewUser(username);
+            aID = 4; // 
+            sqlFunc.WriteAction(uID,aID,sID);
+
             Console.WriteLine($"uuuID : {uID}");
         }
 

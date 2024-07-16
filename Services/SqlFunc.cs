@@ -58,7 +58,7 @@ namespace BlazorApp1.SQLFunc
                         command.Parameters.AddWithValue("username", $"\"{username}\"");
 
                         var retVal = command.ExecuteScalar();
-                        Console.WriteLine(Convert.ToString(retVal));
+                        //Console.WriteLine(Convert.ToString(retVal));
                         if (Convert.ToString(retVal) == "False")
                         {
                             using (var comm = new NpgsqlCommand("INSERT INTO te_users (user_login) VALUES (@n1) RETURNING key_id", connection))
@@ -87,7 +87,7 @@ namespace BlazorApp1.SQLFunc
                                 if (uID != null)
                                 {
                                     AttrInclData.userId = Convert.ToInt32(uID);
-                                    Console.WriteLine(AttrInclData.userId);
+                                    //Console.WriteLine(AttrInclData.userId);
                                 }
                             }
                         }
@@ -99,7 +99,7 @@ namespace BlazorApp1.SQLFunc
                 {
                     // Обраюотка ошибок
                     Console.WriteLine($"Произошла ошибка: {ex.Message}");
-                    Console.WriteLine("AddServers");
+                    //Console.WriteLine("AddServers");
                 }
                 return AttrInclData.userId;
             }
@@ -159,8 +159,8 @@ namespace BlazorApp1.SQLFunc
                 {
                     connection.Open();
 
-                    string QueryStr = "insert into servers ()";
-                    Console.WriteLine(QueryStr);
+                    //string QueryStr = "insert into servers ()";
+                    //Console.WriteLine(QueryStr);
 
                     using (var command = new NpgsqlCommand("INSERT INTO te_servers (host, port, user_name, passwrd, db_name) VALUES (@n2, @n3, @n4, @n5, @n6) RETURNING key_id", connection))
                     {
@@ -237,7 +237,7 @@ namespace BlazorApp1.SQLFunc
                 {
                     using (var command = new NpgsqlCommand("UPDATE te_servers SET is_deleted = true WHERE key_id = @n1", connection))
                     {
-                        Console.WriteLine(selectedServer.KeyID);
+                        //Console.WriteLine(selectedServer.KeyID);
                         command.Parameters.AddWithValue("n1", selectedServer.KeyID);
 
                         command.ExecuteNonQuery();
@@ -257,14 +257,28 @@ namespace BlazorApp1.SQLFunc
                 connection.Open();
                 try
                 {
-                    using (var command = new NpgsqlCommand("INSERT INTO te_actionlogs (user_id, action_id, server_id) VALUES (@n1, @n2, @n3);", connection))
+                    string QueryStr;
+
+                    if (sID != 0)
                     {
-                        Console.WriteLine(uID);
-                        Console.WriteLine(aID);
-                        Console.WriteLine(sID);
+                        QueryStr = "INSERT INTO te_actionlogs (user_id, action_id, server_id) VALUES (@n1, @n2, @n3);";
+                    }
+                    else
+                    {
+                        QueryStr = "INSERT INTO te_actionlogs (user_id, action_id) VALUES (@n1, @n2);";
+                    }
+
+                    using (var command = new NpgsqlCommand(QueryStr, connection))
+                    {
+                        //Console.WriteLine(uID);
+                        //Console.WriteLine(aID);
+                        //Console.WriteLine(sID);
                         command.Parameters.AddWithValue("n1", uID);
                         command.Parameters.AddWithValue("n2", aID);
-                        command.Parameters.AddWithValue("n3", sID);
+                        if (sID != 0)
+                        {
+                            command.Parameters.AddWithValue("n3", sID);
+                        }
                         
                         
 
