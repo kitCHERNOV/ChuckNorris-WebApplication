@@ -42,6 +42,7 @@
 @code {
     private LoginModel loginModel = new();
     private string? loginMessage;
+    private ServerService TemporaryServerServices = new ServerService();
 
     private async Task HandleLogin()
     {
@@ -63,6 +64,8 @@
         {
             if (AdService.IsUserInGroup(loginModel.Username) == false)
             {
+                // before switching to next page:
+                TemporaryServerServices.CheckUsers(loginModel.Username);
                 Navigation.NavigateTo("/success");
             }
             else
