@@ -166,12 +166,12 @@ namespace BlazorApp1.SQLFunc
                     {
 
                         // Here need determine args form
-                        //command.Parameters.AddWithValue("n1", $"\"{newServer.KeyID}\"");
-                        command.Parameters.AddWithValue("n2", $"\"{newServer.Host}\"");
-                        command.Parameters.AddWithValue("n3", $"\"{newServer.Port}\"");
-                        command.Parameters.AddWithValue("n4", $"\"{newServer.UserName}\"");
-                        command.Parameters.AddWithValue("n5", $"\"{newServer.Password}\"");
-                        command.Parameters.AddWithValue("n6", $"\"{newServer.Database}\"");
+
+                        command.Parameters.AddWithValue("n2", newServer.Host);
+                        command.Parameters.AddWithValue("n3", newServer.Port);
+                        command.Parameters.AddWithValue("n4", newServer.UserName);
+                        command.Parameters.AddWithValue("n5", newServer.Password);
+                        command.Parameters.AddWithValue("n6", newServer.Database);
 
                         var keyID = command.ExecuteScalar();
                         if (keyID != null)

@@ -14,7 +14,7 @@
                 <p>Имя сервера: @Server.UserName</p>
                 <p>Порт: @Server.Port</p>
                 <p>Хост: @Server.Host</p>
-                <p>Логин: @Server.Login</p>
+                @* <p>Логин: @Server.Login</p> *@
                 <p>Пароль: @Server.Password</p>
                 <p>База данных: @Server.Database</p>
             </div>
@@ -33,6 +33,6 @@
     {
         // Закрытие модального окна
         OnModalClosed.InvokeAsync();
-        navigationManager.NavigateTo("/success");
+        navigationManager.NavigateTo("/success", true);
     }
 }
