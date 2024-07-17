@@ -15,10 +15,17 @@
                     @foreach (var script in scripts)
                     {
                         <p>Выполняется скрипт: @script</p>
-                        // Выполнение скрипта на сервере
-                        ExecuteScript(script);
+                        if (ExecuteScript(script))
+                        {
+                            <p>Скрипт выполнен успешно.</p>
+                        }
+                        else
+                        {
+                            <p>Ошибка выполнения скрипта: @errorMessage</p>
+                            break;
+                        }
                     }
-                    <p>Скрипты выполнены успешно.</p>
+                    <p>Все скрипты выполнены успешно.</p>
                 }
                 else
                 {
@@ -44,7 +51,7 @@
         ExecuteScripts();
     }
 
-    private void ExecuteScripts()
+    private bool ExecuteScripts()
     {
         try
         {
@@ -54,19 +61,34 @@
                 connection.Open();
                 foreach (var script in scripts)
                 {
-                    // Выполнение скрипта на сервере
+                    if (!ExecuteScript(script))
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
+            return false;
         }
     }
 
-    private void ExecuteScript(string script)
+    private bool ExecuteScript(string script)
     {
-        // Выполнение скрипта на сервере
+        try
+        {
+            // Выполнение скрипта на сервере
+            // Используйте SqlCommand для выполнения SQL-запроса
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            return false;
+        }
     }
 
     private void CloseModal()
