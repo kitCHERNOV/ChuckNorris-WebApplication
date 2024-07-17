@@ -1,0 +1,64 @@
+﻿@using BlazorApp1.Models
+@using BlazorApp1.Services
+@using System.Data.SqlClient
+@using Npgsql;
+@inject ServerService serverService
+
+<div class="modal" tabindex="-1" role="dialog" style="display:block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Проверка подключения</h5>
+                <button type="button" class="close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                @if (string.IsNullOrEmpty(errorMessage))
+                {
+                    <p>Подключение к серверу возможно.</p>
+                }
+                else
+                {
+                    <p>Ошибка подключения: @errorMessage</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Server Server { get; set; }
+
+    [Parameter]
+    public EventCallback OnModalClosed { get; set; }
+
+    private string errorMessage = "";
+
+    protected override void OnInitialized()
+    {
+        TestConnection();
+    }
+
+    private void TestConnection()
+    {
+        serverService.CheckConnected(Server);
+        // try
+        // {
+        //     var connectionString = $"Server={Server.UserName};Database={Server.Database};User Id={Server.Login};Password={Server.Password}";
+        //     using (var connection = new NpgsqlConnection(connectionString))
+        //     {
+        //         connection.Open();
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     errorMessage = ex.Message;
+        // }
+        
+    }
+
+    private void CloseModal()
+    {
+        OnModalClosed.InvokeAsync();
+    }
+}
