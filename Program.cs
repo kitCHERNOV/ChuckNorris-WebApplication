@@ -1,3 +1,4 @@
+using BlazorApp1.Components;
 using BlazorApp1.Models;
 using BlazorApp1.Services;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,8 @@ builder.Services.AddScoped<ServerService>(sp =>
     var newServer = new Server();
     return new ServerService(servers, newServer);
 });
+
+//builder.Services.AddScoped<ExecuteScriptsModal>();
 
 // Configure Active Directory Service
 builder.Services.AddScoped<ActiveDirectoryService>(sp =>

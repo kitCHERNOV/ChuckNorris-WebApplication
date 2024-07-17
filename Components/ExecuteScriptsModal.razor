@@ -2,6 +2,8 @@
 @using BlazorApp1.Services
 @using System.Data.SqlClient
 @using Npgsql;
+@inject NavigationManager navigationManager
+
 
 <div class="modal" tabindex="-1" role="dialog" style="display:block">
     <div class="modal-dialog">
@@ -11,24 +13,37 @@
                 <button type="button" class="close" @onclick="CloseModal">&times;</button>
             </div>
             <div class="modal-body">
-                @if (string.IsNullOrEmpty(errorMessage))
+                @if (true)
                 {
+                    GG();
                     @foreach (var script in scripts)
                     {
                         <p>Выполняется скрипт: @script</p>
                         // Выполнение скрипта на сервере
-                        ExecuteScript(script);
+                        if (ExecuteScript(script))
+                        {
+                            <p>Скрипт выполнен успешно.</p>
+                        }
+                        else
+                        {
+                            <p>Ошибка выполнения скрипта: @errorMessage</p>
+                            break;
+                        }
                     }
-                    <p>Скрипты выполнены успешно.</p>
+                    <p>Все скрипты выполнены успешно.</p>
                 }
                 else
                 {
                     <p>Ошибка выполнения скриптов: @errorMessage</p>
                 }
+                <p>Скрипт выполнен успешно.</p>
             </div>
         </div>
     </div>
 </div>
+
+
+
 
 @code {
     [Parameter]
@@ -45,7 +60,12 @@
         ExecuteScripts();
     }
 
-    private void ExecuteScripts()
+    private void GG()
+    {
+        Console.WriteLine("GGGGGG");
+    }
+
+    private bool ExecuteScripts()
     {
         try
         {
@@ -55,23 +75,42 @@
                 connection.Open();
                 foreach (var script in scripts)
                 {
-                    // Выполнение скрипта на сервере
+                    if (!ExecuteScript(script))
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
+            return false;
         }
     }
 
-    private void ExecuteScript(string script)
+    private bool ExecuteScript(string script)
     {
         // Выполнение скрипта на сервере
+        try
+        {
+            // Выполнение скрипта на сервере
+            // Используйте SqlCommand для выполнения SQL-запроса
+            Console.WriteLine("treu");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            Console.WriteLine(errorMessage);
+            return false;
+        }
     }
 
     private void CloseModal()
     {
         OnModalClosed.InvokeAsync();
+        navigationManager.NavigateTo("/success", true);
     }
 }
