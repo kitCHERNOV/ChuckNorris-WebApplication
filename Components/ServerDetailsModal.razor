@@ -29,8 +29,11 @@
     [Parameter]
     public EventCallback OnModalClosed { get; set; }
 
+
+
     private void CloseModal()
     {
+        serverService.CheckConnected(Server);
         // Закрытие модального окна
         OnModalClosed.InvokeAsync();
         navigationManager.NavigateTo("/success", true);

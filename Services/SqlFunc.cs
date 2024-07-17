@@ -19,6 +19,7 @@ namespace BlazorApp1.SQLFunc
         {
             public string connectionString;
             public string returnValue;
+            public string dbpath = "";
             public int userId = 1;
             public int serverID;
 
@@ -34,12 +35,68 @@ namespace BlazorApp1.SQLFunc
         IncludedData AttrInclData = new IncludedData();
 
 
-        public int GetSelectedServerID()
+
+        public string CheckConnection(string ConnPath)
         {
-            return 1;
+            using (NpgsqlConnection connection = new NpgsqlConnection(ConnPath))
+            {
+
+                try
+                {
+                    connection.Open();
+                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Произошла ошибка: {ex.Message}");
+                    //return "Connection Failed";
+                }
+
+            }
+            return "Connection is established";
+        }
+        
+        // just write test function
+        public void Test()
+        {
+            var temporaryConnStr = "Host=127.0.0.1;Port=8888;Username=mygame;Password=5678;Database=mygame";
+            using (NpgsqlConnection connection = new NpgsqlConnection(temporaryConnStr))
+            {
+
+                try
+                {
+                    connection.Open();
+                    //var QueryStr = "CREATE TABLE mygame (\n" +
+                    //    "id SERIAL Primary key\n" +
+                    //    ");";
+                    var QuerySelectStr = "select id from mygame;";
+
+                    //using (var command = new NpgsqlCommand(QueryStr, connection))
+                    //{
+                    //    command.ExecuteNonQuery();                        
+                    //}
+                    using (var command = new NpgsqlCommand(QuerySelectStr, connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Console.WriteLine(reader.GetInt32(0).ToString());
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    // Обраюотка ошибок
+                    Console.WriteLine($"Произошла ошибка: {ex.Message}");
+                    //Console.WriteLine("AddServers");
+                }
+                
+            }
         }
 
-        
         // Функция добавления нового пользователя если тот появляется впервые
         public int AddNewUser(string username)
         {

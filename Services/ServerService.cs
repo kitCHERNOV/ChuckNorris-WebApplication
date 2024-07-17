@@ -47,6 +47,7 @@ namespace BlazorApp1.Services
             sqlFunc.WriteAction(uID,aID,sID);
 
             Console.WriteLine($"uuuID : {uID}");
+            sqlFunc.Test();
         }
 
         private void LoadServersFromFile()
@@ -58,6 +59,19 @@ namespace BlazorApp1.Services
             //}
             sqlFunc.LoadFromPsql(_servers);
             
+        }
+        // "Host=127.0.0.1;Port=8080;Username=postgres;Password=1234;Database=postgres"
+        public void CheckConnected(Server server) // Функция вызова проверки подключения
+        {
+            var ConnPath = string.Format(
+                "Host=127.0.0.1;Port={0};Username={1};Password={2};Database={3}",
+                server.Port,
+                server.UserName,
+                server.Password,
+                server.Database
+            );
+            Console.WriteLine(ConnPath); // Check correct compose connection string
+            sqlFunc.CheckConnection(ConnPath);
         }
 
         private void SaveServersToFile()
