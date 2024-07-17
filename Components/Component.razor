@@ -1,0 +1,76 @@
+﻿@using BlazorApp1.Models
+@using BlazorApp1.Services
+@using System.Data.SqlClient
+
+<div class="modal" tabindex="-1" role="dialog" style="display:block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Выполнение скриптов</h5>
+                <button type="button" class="close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                @if (string.IsNullOrEmpty(errorMessage))
+                {
+                    @foreach (var script in scripts)
+                    {
+                        <p>Выполняется скрипт: @script</p>
+                        // Выполнение скрипта на сервере
+                        ExecuteScript(script);
+                    }
+                    <p>Скрипты выполнены успешно.</p>
+                }
+                else
+                {
+                    <p>Ошибка выполнения скриптов: @errorMessage</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Server Server { get; set; }
+
+    [Parameter]
+    public EventCallback OnModalClosed { get; set; }
+
+    private string errorMessage = "";
+    private string[] scripts = { "CREATE TABLE...", "INSERT INTO...", "DELETE FROM..." };
+
+    protected override void OnInitialized()
+    {
+        ExecuteScripts();
+    }
+
+    private void ExecuteScripts()
+    {
+        try
+        {
+            var connectionString = $"Server={Server.UserName};Database={Server.Database};User Id={Server.Login};Password={Server.Password}";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                foreach (var script in scripts)
+                {
+                    // Выполнение скрипта на сервере
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void ExecuteScript(string script)
+    {
+        // Выполнение скрипта на сервере
+    }
+
+    private void CloseModal()
+    {
+        OnModalClosed.InvokeAsync();
+    }
+}
