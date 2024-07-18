@@ -30,32 +30,37 @@ namespace BlazorApp1.Services
             }
         }
 
-        public bool IsUserInGroup(string username) 
+        public bool IsUserInGroup(string domainName,string username, string password)
         {
-            try 
+            try
             {
-                using (PrincipalContext context = new PrincipalContext(ContextType.Domain, _domainName, _container)) // Создание контекста для подключения к домену с указанным именем и контейнером
+                using (var pc = new PrincipalContext(ContextType.Domain, _domainName, username , password))
                 {
-                    using (UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, username)) // Поиск пользователя в домене по его имени
+                    var auth = pc.ValidateCredentials(username, password);
+
+                    if (!auth)
                     {
-                        if (user != null) 
-                        {
-                            using (GroupPrincipal group = GroupPrincipal.FindByIdentity(context, "MAI-Group")) // Поиск группы "MAI-Group" в домене
-                            {
-                                if (group != null) 
-                                {
-                                    return user.IsMemberOf(group); // Возврат результата проверки членства пользователя в группе
-                                }
-                            }
-                        }
+                        return false;
                     }
+
+                    UserPrincipal user = UserPrincipal.FindByIdentity(pc, username);
+
+                    using (GroupPrincipal gr = GroupPrincipal.FindByIdentity(pc, "MAI-Group"))
+                    {
+                        var isInGroup = user.IsMemberOf(gr);
+                    
+                    return isInGroup;
+                            }
+                        
+                    
                 }
+
             }
-            catch (Exception ex) // Начало блока catch для обработки исключений
+            catch (Exception ex)
             {
-                Console.WriteLine("Error checking group membership: " + ex.Message); // Вывод сообщения об ошибке в консоль
+                Console.WriteLine("Error checking group membership: " + ex.Message);
             }
-            return false; // Возврат false, если произошла ошибка или пользователь/группа не найдены
+            return false;
         }
     }
 }
