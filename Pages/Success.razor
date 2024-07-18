@@ -38,6 +38,7 @@
 
 <button class="btn btn-success" @onclick="() => ShowAddServerModal()">Добавить</button>
 
+
 @if (showAddServerModal)
 {
     <AddServerModal Server="serverService.GetNewServer()" OnServerSaved="AddServer" OnModalClosed="CloseAddServerModal" />
@@ -62,6 +63,8 @@
 {
     <ExecuteScriptsModal Server="serverService.GetSelectedServer()" OnModalClosed="CloseExecuteScriptsModal" />
 }
+
+
 
 
 @code {
@@ -151,7 +154,7 @@
         serverService.SetSelectedServer(server);
         // Console.WriteLine("Aaaaaaboba");
         showExecuteScriptsModal = true;
-        Console.WriteLine("tttttt");
+        // Console.WriteLine("tttttt");
     }
 
     private void CloseExecuteScriptsModal()

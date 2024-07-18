@@ -1,8 +1,7 @@
 ﻿@using BlazorApp1.Models
 @using BlazorApp1.Services
-@using System.Data.SqlClient
 @using Npgsql;
-@inject NavigationManager navigationManager
+@*@inject NavigationManager navigationManager *@
 
 
 <div class="modal" tabindex="-1" role="dialog" style="display:block">
@@ -13,9 +12,8 @@
                 <button type="button" class="close" @onclick="CloseModal">&times;</button>
             </div>
             <div class="modal-body">
-                @if (true)
+                @if (string.IsNullOrEmpty(errorMessage))
                 {
-                    GG();
                     @foreach (var script in scripts)
                     {
                         <p>Выполняется скрипт: @script</p>
@@ -54,50 +52,101 @@
 
     private string errorMessage = "";
     private string[] scripts = { "CREATE TABLE...", "INSERT INTO...", "DELETE FROM..." };
+    private string QueryStr;
 
     protected override void OnInitialized()
     {
         ExecuteScripts();
     }
 
-    private void GG()
-    {
-        Console.WriteLine("GGGGGG");
-    }
 
     private bool ExecuteScripts()
-    {
+    { 
         try
         {
-            var connectionString = $"Server={Server.UserName};Database={Server.Database};User Id={Server.Login};Password={Server.Password}";
-            using (var connection = new NpgsqlConnection(connectionString))
-            {
-                connection.Open();
-                foreach (var script in scripts)
-                {
-                    if (!ExecuteScript(script))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            // var connectionString = $"Server={Server.UserName};Database={Server.Database};User Id={Server.Login};Password={Server.Password}";
+            // using (var connection = new NpgsqlConnection(connectionString))
+            // {
+            //     connection.Open();
+            //     foreach (var script in scripts)
+            //     {
+            //         if (!ExecuteScript(script))
+            //         {
+            //             return false;
+            //         }
+            //     }
+            // }
+
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
             return false;
         }
+        return false;
     }
 
     private bool ExecuteScript(string script)
     {
+        var ConnPath = string.Format(
+                "Host=127.0.0.1;Port={0};Username={1};Password={2};Database={3}",
+                Server.Port,
+                Server.UserName,
+                Server.Password,
+                Server.Database
+            );
+        string filePath = "C:/Users/Админ/source/repos/ChuckNorris/StdSqlScripts/1.txt";
+        try
+        {
+            // Считываем весь текст из файла
+            QueryStr = File.ReadAllText(filePath);
+
+            // Выводим содержимое файла на консоль
+            Console.WriteLine("Goood");
+            Console.WriteLine(QueryStr);
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибок
+            Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
+        }
+
+
         // Выполнение скрипта на сервере
         try
         {
+            using (var connection = new NpgsqlConnection(ConnPath))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand(QueryStr, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+                // Get person data  
+                using (var command = new NpgsqlCommand("select first_name, last_name, patronymic from person;", connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Console.WriteLine(reader.GetString(0));
+                            Console.WriteLine(reader.GetString(1));
+                            Console.WriteLine(reader.GetString(2));
+                        }
+                    }
+
+                }
+                // delete table which was created earlier
+                using (var command = new NpgsqlCommand("DROP TABLE person",connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+            }
             // Выполнение скрипта на сервере
             // Используйте SqlCommand для выполнения SQL-запроса
-            Console.WriteLine("treu");
+            // Console.WriteLine("treu");\
+            Console.WriteLine("Script execute seccess!");
             return true;
         }
         catch (Exception ex)
@@ -111,6 +160,6 @@
     private void CloseModal()
     {
         OnModalClosed.InvokeAsync();
-        navigationManager.NavigateTo("/success", true);
+        // navigationManager.NavigateTo("/success", true);
     }
 }

@@ -1,0 +1,10 @@
+create table person (
+	key_id serial primary key,
+	first_name text not null,
+	last_name text not null,
+	patronymic text not null
+);
+
+insert into person (first_name, last_name, patronymic) values ('Ivan', 'Ivanov','Ivanovich');
+insert into person (first_name, last_name, patronymic) values ('Victor', 'Victorov','Victorovich');
+insert into person (first_name, last_name, patronymic) values ('Ian', 'Luncaster','Fleming');
