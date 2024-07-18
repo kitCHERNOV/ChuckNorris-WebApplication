@@ -23,8 +23,6 @@ builder.Services.AddScoped<ServerService>(sp =>
     return new ServerService(servers, newServer);
 });
 
-//builder.Services.AddScoped<ExecuteScriptsModal>();
-
 // Configure Active Directory Service
 builder.Services.AddScoped<ActiveDirectoryService>(sp =>
 {
