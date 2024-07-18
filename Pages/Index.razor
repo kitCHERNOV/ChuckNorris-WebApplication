@@ -1,7 +1,7 @@
 @page "/"
 @using BlazorApp1.Services
-@inject ActiveDirectoryService AdService
-@inject NavigationManager Navigation
+@inject ActiveDirectoryService AdService;
+@inject NavigationManager Navigation;
 
 @* Add Bootstrap CSS *@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
@@ -60,9 +60,9 @@
         }
 
     
-        if (AdService.ValidateUser(loginModel.Username, loginModel.Password)==false)
+        if (AdService.ValidateUser(loginModel.Username, loginModel.Password))
         {
-            if (AdService.IsUserInGroup(loginModel.Username) == false)
+            if (AdService.IsUserInGroup("DC-1.Les.local", loginModel.Username, loginModel.Password))
             {
                 // before switching to next page:
                 TemporaryServerServices.CheckUsers(loginModel.Username);
