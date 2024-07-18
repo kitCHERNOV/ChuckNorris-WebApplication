@@ -47,7 +47,7 @@ namespace BlazorApp1.Services
             sqlFunc.WriteAction(uID,aID,sID);
 
             Console.WriteLine($"uuuID : {uID}");
-            sqlFunc.Test();
+            //sqlFunc.Test();
         }
 
         private void LoadServersFromFile()

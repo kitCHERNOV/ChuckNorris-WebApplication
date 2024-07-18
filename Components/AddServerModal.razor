@@ -42,7 +42,7 @@
 
                     <div class="form-group">
                         <label for="password">Пароль</label>
-                        <InputText type="password" id="password" @bind-Value="@Server.Password" class="form-control" />
+                        <InputText id="password" @bind-Value="@Server.Password" class="form-control" />
                         <ValidationMessage For="@(() => Server.Password)" />
                     </div>
 
