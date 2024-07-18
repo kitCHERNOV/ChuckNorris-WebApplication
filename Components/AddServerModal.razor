@@ -52,11 +52,17 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-primary" @onclick="TestConnection">Проверить подключение</button>
                 </EditForm>
             </div>
         </div>
     </div>
 </div>
+
+@if (showTestConnectionModal)
+{
+    <TestConnectionModal Server="Server" OnModalClosed="CloseTestConnectionModal" />
+}
 
 @code {
     [Parameter]
@@ -67,6 +73,8 @@
 
     [Parameter]
     public EventCallback OnModalClosed { get; set; }
+
+    private bool showTestConnectionModal = false;
 
     private void SubmitForm()
     {
@@ -81,4 +89,15 @@
         OnModalClosed.InvokeAsync();
         navigationManager.NavigateTo("/success",true);
     }
+
+    private void TestConnection()
+    {
+        showTestConnectionModal = true;
+    }
+
+    private void CloseTestConnectionModal()
+    {
+        showTestConnectionModal = false;
+    }
+
 }

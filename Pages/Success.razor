@@ -26,6 +26,7 @@
                 <td>@server.UserName</td>
                 <td>@server.Database</td>
                 <td>
+                    <button class="btn btn-info" @onclick="() => ShowExecuteScriptsModal(server)">Выполнить скрипты</button>
                     <button class="btn btn-primary" @onclick="() => ShowServerDetails(server)">Подробнее</button>
                     <button class="btn btn-warning" @onclick="() => ShowServerEdit(server)">Редактировать</button>
                     <button class="btn btn-danger" @onclick="() => ShowDeleteServerModal(server)">Удалить</button>
@@ -57,11 +58,29 @@
     <DeleteServerModal Server="serverService.GetSelectedServer()" OnServerDeleted="DeleteServer" OnModalClosed="CloseDeleteServerModal" />
 }
 
+@if (showExecuteScriptsModal)
+{
+    <ExecuteScriptsModal Server="serverService.GetSelectedServer()" OnModalClosed="CloseExecuteScriptsModal" />
+}
+
 @code {
     private bool showAddServerModal = false;
     private bool showServerDetails = false;
     private bool showServerEdit = false;
     private bool showDeleteServerModal = false;
+    private bool showExecuteScriptsModal = false;
+
+    private void ShowExecuteScriptsModal(Server server)
+    {
+        serverService.SetSelectedServer(server);
+        showExecuteScriptsModal = true;
+    }
+
+    private void CloseExecuteScriptsModal()
+    {
+        showExecuteScriptsModal = false;
+    }
+
 
     protected override void OnInitialized()
     {
