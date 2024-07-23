@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using BlazorApp1.Models;
 using System;
 using System.Reflection.PortableExecutable;
+using System.Text.Json;
+using static BlazorApp1.SQLFunc.sqlFunc;
 
 namespace BlazorApp1.SQLFunc
 {
@@ -15,26 +17,73 @@ namespace BlazorApp1.SQLFunc
         //{
         //    connectionString = ""
         //};
+        public static string connectionString = GetDbPathFromJson();
         public struct IncludedData
         {
-            public string connectionString;
             public string returnValue;
-            public string dbpath = "";
+            public string DataBasePath = "";
             public int userId = 1;
             public int serverID;
 
 
             public IncludedData()
             {
-                connectionString = "Host=127.0.0.1;Port=8080;Username=postgres;Password=1234;Database=postgres";
+                //connectionString = GetDbPathFromJson();//"Host=127.0.0.1;Port=8080;Username=postgres;Password=1234;Database=postgres";
                 serverID = 0;
                 returnValue = "";
             } 
         }
+
+        public struct PathToDB
+        {
+            public string DataBasePath { get; set; }
+        }
         
         IncludedData AttrInclData = new IncludedData();
 
+       
+        static string GetDbPathFromJson()
+        {
+            //var d;
+            using (FileStream fs = new FileStream("appsettings.json", FileMode.Open))
+            {
+                var d = JsonSerializer.Deserialize<PathToDB>(fs);
+                //Console.WriteLine($"Name: {d.DataBasePath}");
+                return d.DataBasePath;
+            }
+        }
 
+        public void ExecuteAddedScript(ref string ConnPath, ref string QueryStr)
+        {
+            using (var connection = new NpgsqlConnection(ConnPath))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand(QueryStr, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+                // Get person data  
+                using (var command = new NpgsqlCommand("select first_name, last_name, patronymic from person;", connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Temporary data output
+                            Console.WriteLine(reader.GetString(0));
+                            Console.WriteLine(reader.GetString(1));
+                            Console.WriteLine(reader.GetString(2));
+                        }
+                    }
+
+                }
+                // delete table which was created earlier
+                using (var command = new NpgsqlCommand("DROP TABLE person", connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
         public string CheckConnection(string ConnPath)
         {
@@ -100,7 +149,7 @@ namespace BlazorApp1.SQLFunc
         // Функция добавления нового пользователя если тот появляется впервые
         public int AddNewUser(string username)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(AttrInclData.connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 
                 try
@@ -168,7 +217,7 @@ namespace BlazorApp1.SQLFunc
         public void LoadFromPsql(List<Server> listserver)
         {
             
-            using (NpgsqlConnection connection = new NpgsqlConnection(AttrInclData.connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 try
                 {
@@ -210,7 +259,7 @@ namespace BlazorApp1.SQLFunc
 
         public int AddDataToSql(Server newServer)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(AttrInclData.connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 try
                 {
@@ -251,7 +300,7 @@ namespace BlazorApp1.SQLFunc
         {
             try
             {
-                using (var connection = new NpgsqlConnection(AttrInclData.connectionString))
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
 
@@ -287,7 +336,7 @@ namespace BlazorApp1.SQLFunc
 
         public void DeleteServer(Server selectedServer)
         {
-            using (var connection = new NpgsqlConnection(AttrInclData.connectionString))
+            using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
                 try
@@ -309,7 +358,7 @@ namespace BlazorApp1.SQLFunc
 
         public void WriteAction(int uID, int aID, int sID)
         {
-            using (var connection = new NpgsqlConnection(AttrInclData.connectionString))
+            using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
                 try

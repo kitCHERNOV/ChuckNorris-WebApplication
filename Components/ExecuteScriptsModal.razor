@@ -14,27 +14,23 @@
             <div class="modal-body">
                 @if (string.IsNullOrEmpty(errorMessage))
                 {
-                    @foreach (var script in scripts)
+                    
+                    // Выполнение скрипта на сервере
+                    if (ExecuteScript())
                     {
-                        <p>Выполняется скрипт: @script</p>
-                        // Выполнение скрипта на сервере
-                        if (ExecuteScript(script))
-                        {
-                            <p>Скрипт выполнен успешно.</p>
-                        }
-                        else
-                        {
-                            <p>Ошибка выполнения скрипта: @errorMessage</p>
-                            break;
-                        }
+                        <p>Скрипт выполнен успешно.</p>
                     }
-                    <p>Все скрипты выполнены успешно.</p>
+                    else
+                    {
+                        <p>Ошибка выполнения скрипта: @errorMessage</p>
+                    }
+                    
                 }
                 else
                 {
                     <p>Ошибка выполнения скриптов: @errorMessage</p>
                 }
-                <p>Скрипт выполнен успешно.</p>
+                
             </div>
         </div>
     </div>
@@ -51,42 +47,13 @@
     public EventCallback OnModalClosed { get; set; }
 
     private string errorMessage = "";
-    private string[] scripts = { "CREATE TABLE...", "INSERT INTO...", "DELETE FROM..." };
+    // private string[] scripts = { "CREATE TABLE...", "INSERT INTO...", "DELETE FROM..." };
     private string QueryStr;
-
-    protected override void OnInitialized()
-    {
-        ExecuteScripts();
-    }
+    ServerService servFuncs = new();
+    
 
 
-    private bool ExecuteScripts()
-    { 
-        try
-        {
-            // var connectionString = $"Server={Server.UserName};Database={Server.Database};User Id={Server.Login};Password={Server.Password}";
-            // using (var connection = new NpgsqlConnection(connectionString))
-            // {
-            //     connection.Open();
-            //     foreach (var script in scripts)
-            //     {
-            //         if (!ExecuteScript(script))
-            //         {
-            //             return false;
-            //         }
-            //     }
-            // }
-
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            return false;
-        }
-        return false;
-    }
-
-    private bool ExecuteScript(string script)
+    private bool ExecuteScript()
     {
         var ConnPath = string.Format(
                 "Host=127.0.0.1;Port={0};Username={1};Password={2};Database={3}",
@@ -96,57 +63,28 @@
                 Server.Database
             );
         // string filePath = "C:/Users/Админ/source/repos/ChuckNorris/StdSqlScripts/1.txt";
-        string filePath = "C:/Users/roumi/source/repos/ChuckNorris/StdSqlScripts/1.txt";
+        string filePath = "./StdSqlScripts/1.txt";
         try
         {
             // Считываем весь текст из файла
             QueryStr = File.ReadAllText(filePath);
 
             // Выводим содержимое файла на консоль
-            Console.WriteLine("Goood");
-            Console.WriteLine(QueryStr);
+            // Console.WriteLine("Goood");
+            // Console.WriteLine(QueryStr);
         }
         catch (Exception ex)
         {
             // Обработка ошибок
-            Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
+            Console.WriteLine($"ExecuteScriptsModal. Ошибка при чтении файла: {ex.Message}");
         }
 
 
         // Выполнение скрипта на сервере
         try
         {
-            using (var connection = new NpgsqlConnection(ConnPath))
-            {
-                connection.Open();
-                using (var command = new NpgsqlCommand(QueryStr, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-                // Get person data  
-                using (var command = new NpgsqlCommand("select first_name, last_name, patronymic from person;", connection))
-                {
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Console.WriteLine(reader.GetString(0));
-                            Console.WriteLine(reader.GetString(1));
-                            Console.WriteLine(reader.GetString(2));
-                        }
-                    }
-
-                }
-                // delete table which was created earlier
-                using (var command = new NpgsqlCommand("DROP TABLE person",connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-            }
-            // Выполнение скрипта на сервере
-            // Используйте SqlCommand для выполнения SQL-запроса
-            // Console.WriteLine("treu");\
+            servFuncs.ExecuteAddedScript(ref ConnPath, ref QueryStr);
+            
             Console.WriteLine("Script execute seccess!");
             return true;
         }
