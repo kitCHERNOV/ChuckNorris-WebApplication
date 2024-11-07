@@ -45,7 +45,7 @@ namespace BlazorApp1.Services
 
                     UserPrincipal user = UserPrincipal.FindByIdentity(pc, username);
 
-                    using (GroupPrincipal gr = GroupPrincipal.FindByIdentity(pc, "MAI-Group"))
+                    using (GroupPrincipal gr = GroupPrincipal.FindByIdentity(pc, "something"))
                     {
                         var isInGroup = user.IsMemberOf(gr);
                     
