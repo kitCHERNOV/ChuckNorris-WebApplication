@@ -46,7 +46,7 @@ namespace BlazorApp1.Services
             aID = 4; // 
             sqlFunc.WriteAction(uID,aID,sID);
 
-            Console.WriteLine($"uuuID : {uID}");
+            // Console.WriteLine($"uuuID : {uID}");
             sqlFunc.Test();
         }
 
@@ -110,7 +110,7 @@ namespace BlazorApp1.Services
             //SaveServersToFile();
             
             aID = 1;
-            Console.WriteLine($"{uID} : uuuu");
+           // 
             sqlFunc.WriteAction(uID, aID, sID); // Correct
         }
 
