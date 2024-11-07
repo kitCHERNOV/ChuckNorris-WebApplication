@@ -26,7 +26,7 @@ namespace BlazorApp1.SQLFunc
 
             public IncludedData()
             {
-                connectionString = "Host=127.0.0.1;Port=8080;Username=postgres;Password=1234;Database=postgres";
+                connectionString = "Host=;Port=;Username=;Password=;Database=";
                 serverID = 0;
                 returnValue = "";
             } 
@@ -59,7 +59,7 @@ namespace BlazorApp1.SQLFunc
         // just write test function
         public void Test()
         {
-            var temporaryConnStr = "Host=127.0.0.1;Port=8888;Username=mygame;Password=5678;Database=mygame";
+            var temporaryConnStr = "Host=;Port=;Username=;Password=;Database=";
             using (NpgsqlConnection connection = new NpgsqlConnection(temporaryConnStr))
             {
 
@@ -68,7 +68,7 @@ namespace BlazorApp1.SQLFunc
                     connection.Open();
                     //var QueryStr = "CREATE TABLE mygame (\n" +
                     //    "id SERIAL Primary key\n" +
-                    //    ");";
+                    //    ");"; some test time
                     var QuerySelectStr = "select id from mygame;";
 
                     //using (var command = new NpgsqlCommand(QueryStr, connection))
@@ -91,7 +91,6 @@ namespace BlazorApp1.SQLFunc
                 {
                     // Обраюотка ошибок
                     Console.WriteLine($"Произошла ошибка: {ex.Message}");
-                    //Console.WriteLine("AddServers");
                 }
                 
             }
@@ -118,6 +117,7 @@ namespace BlazorApp1.SQLFunc
                         //Console.WriteLine(Convert.ToString(retVal));
                         if (Convert.ToString(retVal) == "False")
                         {
+                            // tr_users - таблица пользователей зарегистрированных в системе
                             using (var comm = new NpgsqlCommand("INSERT INTO te_users (user_login) VALUES (@n1) RETURNING key_id", connection))
                             {
 
@@ -156,7 +156,7 @@ namespace BlazorApp1.SQLFunc
                 {
                     // Обраюотка ошибок
                     Console.WriteLine($"Произошла ошибка: {ex.Message}");
-                    //Console.WriteLine("AddServers");
+                    //Console.WriteLine("");
                 }
                 return AttrInclData.userId;
             }
@@ -173,9 +173,9 @@ namespace BlazorApp1.SQLFunc
                 try
                 {
                     connection.Open();
-
+                    // te_servers - параметры подключения к серверу
                     string QueryStr = "Select key_id, host, port, user_name, passwrd, db_name from te_servers WHERE is_deleted = false;";
-
+                    // te_servers - хранит параметры подключения к другим бд
                     using (var command = new NpgsqlCommand(QueryStr, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -184,7 +184,7 @@ namespace BlazorApp1.SQLFunc
                             {
                                 listserver.Add(new Server
                                 {
-                                    //Login = "anton"/*reader.GetString(0)*/,
+                                    //Login = /*reader.GetString(0)*/,
                                     KeyID = reader.GetInt32(0),
                                     Host = reader.GetString(1),
                                     Port = reader.GetString(2),
